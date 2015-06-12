@@ -1,11 +1,9 @@
 #include <string.h>
 #include "lazer_lines.h"
 
-struct point {
-  double lat;
-  double lon;
-};
-
+/**
+ * Converts encoded offset to integer value
+ */
 int decode_point(char* strPoint, uint cch) {
   int i;
   int binary_decimal = 0;
@@ -51,12 +49,10 @@ VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits) 
   int cchMaxChunks = FIX2INT(precision_digits) + 1;
 
   uint cDecodedValues = 0;
-  int* decoded_values = (int*)calloc(cch, sizeof(int));
-  if (decoded_values == NULL) {
-    // Return some ruby error?
-    return Qnil;
-  }
+  int decoded_values[cch];
 
+  // Iterate over the encoded polyline, decoding character strings into
+  // integer point components
   char rgchChunks[cchMaxChunks + 1];
   uint cchChunk = 0;
   int i;
@@ -98,8 +94,6 @@ VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits) 
     VALUE pointAry = rb_ary_new3(2, rbLat, rbLon);
     rb_ary_store(rbPoints, (i / 2), pointAry);
   }
-
-  free(decoded_values);
 
   return rbPoints;
 }
