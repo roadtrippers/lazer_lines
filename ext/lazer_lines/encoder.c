@@ -54,6 +54,7 @@ uint encode_point(int decimal_point, char* buffer, int cchMaxChunks) {
 VALUE method_encode(VALUE self, VALUE line_string, VALUE precision_digits) {
   Check_Type(line_string, T_ARRAY);
   Check_Type(precision_digits, T_FIXNUM);
+  Check_Precision(precision_digits);
 
   uint cPoints = RARRAY_LEN(line_string);
   uint cchMaxChunks = FIX2INT(precision_digits) + 1;

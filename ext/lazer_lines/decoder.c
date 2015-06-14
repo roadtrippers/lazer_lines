@@ -96,6 +96,7 @@ VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits) 
   VALUE rbPoints = Qnil;
   Check_Type(encoded_polyline, T_STRING);
   Check_Type(precision_digits, T_FIXNUM);
+  Check_Precision(precision_digits);
 
   char* rgch = RSTRING_PTR(encoded_polyline);
   uint cch = RSTRING_LEN(encoded_polyline);

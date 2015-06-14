@@ -130,5 +130,15 @@ describe LazerLines do
       subject { LazerLines.decode(polyline_6_digits, 6) }
       it { should == decoded_6_digit_points }
     end
+
+    context 'with 8 digits of precision' do
+      it 'encoding raises an ArgumentError' do
+        expect{ LazerLines.encode(initial_points, 8) }.to raise_error(RangeError)
+      end
+
+      it 'decoding raises an ArgumentError' do
+        expect{ LazerLines.decode(polyline_6_digits, 8) }.to raise_error(RangeError)
+      end
+    end
   end
 end
