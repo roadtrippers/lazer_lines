@@ -37,27 +37,15 @@ int decode_point(char* strPoint, uint cch) {
   return binary_decimal;
 }
 
-VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits) {
-  VALUE rbPoints = Qnil;
-  Check_Type(encoded_polyline, T_STRING);
-  Check_Type(precision_digits, T_FIXNUM);
-
-  char* rgch = RSTRING_PTR(encoded_polyline);
-  uint cch = RSTRING_LEN(encoded_polyline);
-
-  int precision = pow(10, FIX2INT(precision_digits));
-  int cchMaxChunks = FIX2INT(precision_digits) + 1;
-
+// Iterate over the encoded polyline, decoding character strings into
+// integer point components
+uint decode_polyline_chunks(const char* rgchPolyline, const uint cch, const uint precision, int* decoded_values) {
   uint cDecodedValues = 0;
-  int decoded_values[cch];
-
-  // Iterate over the encoded polyline, decoding character strings into
-  // integer point components
-  char rgchChunks[cchMaxChunks + 1];
+  char rgchChunks[precision + 1]; // precision + 1, then +1 for null terminator
   uint cchChunk = 0;
   int i;
   for (i = 0; i < cch; ++i) {
-    rgchChunks[cchChunk] = rgch[i];
+    rgchChunks[cchChunk] = rgchPolyline[i];
 
     if ((rgchChunks[cchChunk] - 63) & 0x20) {
       // Do nothing
@@ -73,14 +61,20 @@ VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits) 
     }
   }
 
-  // Now turn the decoded values into points
+  return cDecodedValues;
+}
+
+// Now turn the decoded values into points
+VALUE RbPointsFromDecodedValues(const int* decoded_values, const uint cDecodedValues, const VALUE precision_digits) {
   int lat = 0;
   int lon = 0;
   ID symRound = rb_intern("round");
+  int precision = pow(10, FIX2INT(precision_digits));
 
   // Create array of points, with two values per point
-  rbPoints = rb_ary_new2(cDecodedValues / 2);
+  VALUE rbPoints = rb_ary_new2(cDecodedValues / 2);
 
+  int i;
   for (i = 0; i < cDecodedValues; i += 2) {
     double dLat = (double) (lat += decoded_values[i]) / precision;
     double dLon = (double) (lon += decoded_values[i + 1]) / precision;
@@ -94,6 +88,35 @@ VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits) 
     VALUE pointAry = rb_ary_new3(2, rbLat, rbLon);
     rb_ary_store(rbPoints, (i / 2), pointAry);
   }
+
+  return rbPoints;
+}
+
+VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits) {
+  VALUE rbPoints = Qnil;
+  Check_Type(encoded_polyline, T_STRING);
+  Check_Type(precision_digits, T_FIXNUM);
+
+  char* rgch = RSTRING_PTR(encoded_polyline);
+  uint cch = RSTRING_LEN(encoded_polyline);
+
+  int precision = pow(10, FIX2INT(precision_digits));
+  int cchMaxChunks = FIX2INT(precision_digits) + 1;
+
+  // int* decoded_values = (int*)calloc(cch, sizeof(int));
+  int decoded_values[cch];
+
+  uint cDecodedValues = decode_polyline_chunks(rgch, cch, FIX2INT(precision_digits), decoded_values);
+
+  // Now turn the decoded values into points
+  int lat = 0;
+  int lon = 0;
+  ID symRound = rb_intern("round");
+
+  // Create array of points, with two values per point
+  rbPoints = RbPointsFromDecodedValues(decoded_values, cDecodedValues, precision_digits);
+
+  // free(decoded_values);
 
   return rbPoints;
 }
