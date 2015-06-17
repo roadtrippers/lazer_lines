@@ -6,7 +6,7 @@
  */
 int decode_point(char* strPoint, uint cch) {
   int i;
-  int binary_decimal = 0;
+  int binaryDecimal = 0;
   for (i = cch - 1; i >= 0; --i) {
     // Step 11: Convert from ASCII to integer
     uint chunk = strPoint[i];
@@ -20,26 +20,26 @@ int decode_point(char* strPoint, uint cch) {
     }
 
     // Step: 6-7: Recombine 5-bit chunks into one number
-    binary_decimal = binary_decimal << 5;
-    binary_decimal |= chunk;
+    binaryDecimal = binaryDecimal << 5;
+    binaryDecimal |= chunk;
   }
 
   // Step 5: ?
-  if (binary_decimal & 0x01) {
-    binary_decimal = ~binary_decimal;
+  if (binaryDecimal & 0x01) {
+    binaryDecimal = ~binaryDecimal;
   }
 
   // Step 4: Shift binary bits 1 to the right
-  binary_decimal = binary_decimal >> 1;
+  binaryDecimal = binaryDecimal >> 1;
 
   // Step 3: ?
 
-  return binary_decimal;
+  return binaryDecimal;
 }
 
 // Iterate over the encoded polyline, decoding character strings into
 // integer point components
-uint decode_polyline_chunks(const char* rgchPolyline, uint cch, uint precision, int* decoded_values) {
+uint decode_polyline_chunks(const char* rgchPolyline, uint cch, uint precision, int* decodedValues) {
   uint cDecodedValues = 0;
   char rgchChunks[precision + 1]; // precision + 1, then +1 for null terminator
   uint cchChunk = 0;
@@ -54,7 +54,7 @@ uint decode_polyline_chunks(const char* rgchPolyline, uint cch, uint precision, 
       cchChunk += 1;
       rgchChunks[cchChunk] = '\0';
 
-      decoded_values[cDecodedValues] = decode_point(rgchChunks, cchChunk);
+      decodedValues[cDecodedValues] = decode_point(rgchChunks, cchChunk);
       cDecodedValues += 1;
 
       cchChunk = 0;
@@ -65,7 +65,7 @@ uint decode_polyline_chunks(const char* rgchPolyline, uint cch, uint precision, 
 }
 
 // Now turn the decoded values into points
-VALUE RbPointsFromDecodedValues(const int* decoded_values, uint cDecodedValues, VALUE precision_digits) {
+VALUE rb_points_from_decoded_values(const int* decodedValues, uint cDecodedValues, VALUE precision_digits) {
   int lat = 0;
   int lon = 0;
   ID symRound = rb_intern("round");
@@ -76,8 +76,8 @@ VALUE RbPointsFromDecodedValues(const int* decoded_values, uint cDecodedValues, 
 
   int i;
   for (i = 0; i < cDecodedValues; i += 2) {
-    double dLat = (double) (lat += decoded_values[i]) / precision;
-    double dLon = (double) (lon += decoded_values[i + 1]) / precision;
+    double dLat = (double) (lat += decodedValues[i]) / precision;
+    double dLon = (double) (lon += decodedValues[i + 1]) / precision;
 
     VALUE rbLat = DBL2NUM(dLat);
     VALUE rbLon = DBL2NUM(dLon);
@@ -101,10 +101,10 @@ VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits) 
 
   char* rgch = RSTRING_PTR(encoded_polyline);
   uint cch = RSTRING_LEN(encoded_polyline);
-  int decoded_values[cch];
+  int decodedValues[cch];
 
-  uint cDecodedValues = decode_polyline_chunks(rgch, cch, FIX2INT(precision_digits), decoded_values);
-  rbPoints = RbPointsFromDecodedValues(decoded_values, cDecodedValues, precision_digits);
+  uint cDecodedValues = decode_polyline_chunks(rgch, cch, FIX2INT(precision_digits), decodedValues);
+  rbPoints = rb_points_from_decoded_values(decodedValues, cDecodedValues, precision_digits);
 
   return rbPoints;
 }

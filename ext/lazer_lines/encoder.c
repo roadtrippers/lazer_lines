@@ -1,17 +1,17 @@
 #include <string.h>
 #include "lazer_lines.h"
 
-uint encode_point(int decimal_point, char* buffer, int cchMaxChunks) {
-  int originalPointWasNegative = decimal_point < 0;
+uint encode_point(int decimalPoint, char* buffer, int cchMaxChunks) {
+  int originalPointWasNegative = decimalPoint < 0;
 
   // Step 3 - do we actually need to do anything here?
 
   // Step 4: Left-shift binary value one bit
-  decimal_point = decimal_point << 1;
+  decimalPoint = decimalPoint << 1;
 
   // Step 5: If original value is negative, invert encoding
   if (originalPointWasNegative) {
-    decimal_point = ~decimal_point;
+    decimalPoint = ~decimalPoint;
   }
 
   uint chunks[cchMaxChunks];
@@ -20,14 +20,14 @@ uint encode_point(int decimal_point, char* buffer, int cchMaxChunks) {
   for (i = 0; i < cchMaxChunks; ++i) {
     // Step 6: Break binary value into 5-bit chunks (starting from right)
     // Step 7: Place 5-bit chunks in reverse order
-    chunks[i] = decimal_point & 31;
+    chunks[i] = decimalPoint & 31;
 
     if (chunks[i] > 0) {
       idxLastChunk = i;
     }
 
     // Move the next chunk to the far right
-    decimal_point = decimal_point >> 5;
+    decimalPoint = decimalPoint >> 5;
   }
 
   for (i = 0; i <= idxLastChunk; ++i) {
