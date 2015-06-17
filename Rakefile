@@ -1,10 +1,15 @@
 require "bundler/gem_tasks"
 require 'rake/extensiontask'
+require 'rspec/core/rake_task'
 
 gem_spec = Gem::Specification.load('lazer_lines.gemspec')
 Rake::ExtensionTask.new('lazer_lines', gem_spec) do |ext|
   ext.lib_dir = 'lib/lazer_lines'
 end
+
+RSpec::Core::RakeTask.new('spec')
+
+task :default => [:compile, :spec]
 
 namespace :lazer_lines do
   desc 'Benchmark lazer_lines gem against polylines gem'

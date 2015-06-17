@@ -1,0 +1,4 @@
+---
+test:
+  pre:
+    - bundle exec rake compile
