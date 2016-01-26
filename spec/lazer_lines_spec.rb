@@ -141,4 +141,16 @@ describe LazerLines do
       end
     end
   end
+
+  describe 'encode a single point polyline' do
+    let(:single_point_array) { [[-68.566641, 126.222309]] }
+    let(:single_point_polyline) { "`f~" }
+
+    subject { LazerLines.encode(single_point_polyline, 5) }
+    it 'produces a valid polyline' do
+      puts subject.inspect
+      expect(subject).to eql(single_point_polyline)
+    end
+    #it { should == single_point_polyline }
+  end
 end
