@@ -66,6 +66,9 @@ VALUE method_encode(VALUE self, VALUE line_string, VALUE precision_digits) {
   double oldLon = 0.0;
   int precision = pow(10, FIX2INT(precision_digits));
   for (i = 0; i < cPoints; ++i) {
+    // Ensure each point in the line string is an array
+    Check_Type(rb_ary_entry(line_string, i), T_ARRAY);
+
     double newLat = NUM2DBL(rb_ary_entry(rb_ary_entry(line_string, i), 0));
     double newLon = NUM2DBL(rb_ary_entry(rb_ary_entry(line_string, i), 1));
 

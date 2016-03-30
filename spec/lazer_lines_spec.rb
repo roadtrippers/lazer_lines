@@ -153,4 +153,34 @@ describe LazerLines do
     end
     #it { should == single_point_polyline }
   end
+
+  describe 'blank/empty encoded and decoding' do
+    it 'encodes [] into ""' do
+      expect(LazerLines.encode([], 5)).to eq('')
+    end
+
+    it 'decodes "" into []' do
+      expect(LazerLines.decode('', 5)).to eq([])
+    end
+  end
+
+  describe '.encode error handling' do
+    it 'raises an TypeError when the polyline is nil' do
+      expect { LazerLines.encode(nil, 5) }.to raise_error(TypeError)
+    end
+
+    it 'raises an TypeError when the polyline is [nil]' do
+      expect { LazerLines.encode([nil], 5) }.to raise_error(TypeError)
+    end
+
+    it 'raises an TypeError when the polyline is [[nil, nil]]' do
+      expect { LazerLines.encode([[nil, nil]], 5) }.to raise_error(TypeError)
+    end
+  end
+
+  describe '.decode error handling' do
+    it 'raises an TypeError when the encoded polyline is nil' do
+      expect { LazerLines.decode(nil, 5) }.to raise_error(TypeError)
+    end
+  end
 end
