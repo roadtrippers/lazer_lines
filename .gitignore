@@ -3,7 +3,9 @@
 /_yardoc/
 /coverage/
 /doc/
+/lib/lazer_lines/lazer_lines.bundle
 /pkg/
 /spec/reports/
 /tmp/
 *.swp
+.ruby-version

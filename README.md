@@ -9,6 +9,7 @@ First execute:
 
 Then compile the gem files
 
+    $ bundle exec rake clean
     $ bundle exec rake compile
 
 Now run the specs
