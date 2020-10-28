@@ -9,6 +9,10 @@ module LazerLines
   def self.decode(polyline, precision_digits = 5)
     decode_with_precision(polyline, precision_digits)
   end
+
+  def self.flexpolyline_decode(string)
+    flexpolyline_decode(string)
+  end
 end
 
 require "lazer_lines/lazer_lines"

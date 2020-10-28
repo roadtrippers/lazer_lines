@@ -11,3 +11,4 @@ void Check_Precision(VALUE precision_digits);
 /* Entry points to C extension from Ruby code */
 extern VALUE method_encode(VALUE self, VALUE line_string, VALUE precision_digits);
 extern VALUE method_decode(VALUE self, VALUE encoded_polyline, VALUE precision_digits);
+extern VALUE method_flexpolyline_decode(VALUE self, VALUE rb_string);

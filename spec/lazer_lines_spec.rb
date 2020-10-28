@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'polylines'
 
 describe LazerLines do
+
   PROBLEM_POLYLINES = [
     {
       initial_points: [[38.5, -120.2], [40.7, -120.95], [43.252, -126.453]],
@@ -192,6 +193,19 @@ describe LazerLines do
   describe '.decode error handling' do
     it 'raises an TypeError when the encoded polyline is nil' do
       expect { LazerLines.decode(nil, 5) }.to raise_error(TypeError)
+    end
+  end
+
+  # TODO Consider testing against the dataset discussed here:
+  # TODO https://github.com/heremaps/flexible-polyline#my-favorite-language-is-not-supported-what-now
+  describe ".flexpolyline_decode" do
+    it do
+      [
+        'Bw8BhGkCg-impzk4v21M'
+      ].each do |encoded_polyline|
+        decoded_polyline = LazerLines.flexpolyline_decode(encoded_polyline)
+        pp decoded_polyline
+      end
     end
   end
 end
