@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lazer_lines (0.2.0)
+    lazer_lines (0.3.0)
 
 GEM
   remote: https://rubygems.org/
@@ -34,8 +34,8 @@ DEPENDENCIES
   bundler
   lazer_lines!
   polylines
-  rake (~> 10.0)
-  rake-compiler (~> 0.9)
+  rake
+  rake-compiler
   rspec
   rspec_junit_formatter
 
